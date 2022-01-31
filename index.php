@@ -1,3 +1,11 @@
+<?php
+require "config/config.php";
+session_start();
+if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
+    header("location: login.php");
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,64 +34,101 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4 mt-3">
-                <!-- Box Comment -->
-                <div class="card card-widget">
-                    <div class="card-header">
-                        <div class="card-title text-center" style="float: none;">
-                            <h4 class="text-primary">Card Title</h4>
+            <?php
+            if (empty($_POST['search'])) {
+                if (!empty($_GET['pageno'])) {
+                    $pageno = $_GET['pageno'];
+                } else {
+                    $pageno = 1;
+                }
+                $numOfRecord = 6;
+                $offset = ($pageno - 1) * $numOfRecord;
+                $statement = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                $statement->execute();
+                $rawResult = $statement->fetchAll();
+
+                $total_pages = ceil(count($rawResult) / $numOfRecord);
+                $statement = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfRecord");
+                $statement->execute();
+                $result = $statement->fetchAll();
+            } else {
+                $search = $_POST['search'];
+                if (!empty($_GET['pageno'])) {
+                    $pageno = $_GET['pageno'];
+                } else {
+                    $pageno = 1;
+                }
+                $numOfRecord = 6;
+                $offset = ($pageno - 1) * $numOfRecord;
+                $statement = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$search%' ORDER BY id DESC");
+                $statement->execute();
+                $rawResult = $statement->fetchAll();
+
+                $total_pages = ceil(count($rawResult) / $numOfRecord);
+                $statement = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$numOfRecord");
+                $statement->execute();
+                $result = $statement->fetchAll();
+            }
+            ?>
+            <?php $i = 1;
+            if ($result) : foreach ($result as $value) : ?>
+                    <div class="col-md-4 mt-3">
+                        <!-- Box Comment -->
+                        <div class="card card-widget">
+                            <a href="blogdetail.php?id=<?= $value['id'] ?>">
+                                <div class="card-header">
+                                    <div class="card-title text-center" style="float: none;">
+                                        <h4 class="text-primary"><?= $value['title'] ?></h4>
+                                    </div>
+                                </div>
+                            </a>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <a href="blogdetail.php?id=<?= $value['id'] ?>"><img class="img-fluid pad" src="admin/images/<?= $value['image'] ?>" style="width: 325;height: 186;" alt="Photo"></a>
+                            </div>
+                            <!-- /.card-body -->
                         </div>
+                        <!-- /.card -->
                     </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <img class="img-fluid pad" src="./dist/img/photo2.png" alt="Photo">
-                        <p>I took this photo this morning. What do you guys think?</p>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
-            <div class="col-md-4 mt-3">
-                <!-- Box Comment -->
-                <div class="card card-widget">
-                    <div class="card-header">
-                        <div class="card-title text-center" style="float: none;">
-                            <h4 class="text-primary">Card Title</h4>
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <img class="img-fluid pad" src="./dist/img/photo2.png" alt="Photo">
-                        <p>I took this photo this morning. What do you guys think?</p>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
-            <div class="col-md-4 mt-3">
-                <!-- Box Comment -->
-                <div class="card card-widget">
-                    <div class="card-header">
-                        <div class="card-title text-center" style="float: none;">
-                            <h4 class="text-primary">Card Title</h4>
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-                    <div class="card-body">
-                        <img class="img-fluid pad" src="./dist/img/photo2.png" alt="Photo">
-                        <p>I took this photo this morning. What do you guys think?</p>
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-            </div>
+            <?php $i++;
+                endforeach;
+            endif ?>
+        </div>
+        <div class="mx-3">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
+                    <li class="page-item <?php if ($pageno <= 1) {
+                                                echo "disabled";
+                                            } ?>">
+                        <a class="page-link" href="<?php if ($pageno <= 1) {
+                                                        echo "#";
+                                                    } else {
+                                                        echo "?pageno=" . $pageno - 1;
+                                                    } ?>">Previous</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="?pageno=<?= $pageno ?>"><?= $pageno ?></a></li>
+                    <li class="page-item <?php if ($pageno >= $total_pages) {
+                                                echo "disabled";
+                                            } ?>">
+                        <a class="page-link" href="<?php if ($pageno >= $total_pages) {
+                                                        echo "#";
+                                                    } else {
+                                                        echo "?pageno=" . $pageno + 1;
+                                                    } ?>">Next</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="?pageno=<?= $total_pages ?>">Last</a></li>
+                </ul>
+            </nav>
         </div>
     </div>
     <footer class="main-footer m-0">
-        <div class="float-right d-none d-sm-block">
-            <b>Version</b> 3.2.0-rc
+        <!-- To the right -->
+        <div class="float-right mr-5 d-none d-sm-inline">
+            <a href="logout.php">Logout</a>
         </div>
-        <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2022 <a href="https://github.com/NyiZinThant">Nyi</a>.</strong> All rights reserved.
     </footer>
     <!-- /.content -->
 

@@ -4,34 +4,29 @@ require "../config/config.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in'])) {
     header('location: login.php');
 }
-$statement = $pdo->prepare("SELECT * FROM posts WHERE id=:id");
+$statement = $pdo->prepare("SELECT * FROM users WHERE id=:id");
 $statement->execute([":id" => $_GET['id']]);
 
 $result = $statement->fetchAll();
 if ($_POST) {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $role = $_POST['role'];
     $id = $_POST['id'];
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    if ($_FILES['image']['name'] != null) {
-        $file = "images/" . ($_FILES['image']['name']);
-        $imageType = pathinfo($file, PATHINFO_EXTENSION);
-        if ($imageType != "png" and $imageType != "jpg" and $imageType != "jpeg") {
-            echo "<script>alert('Input must be png,jpg,jpeg')</script>";
-        } else {
-            $image = $_FILES["image"]['name'];
-            move_uploaded_file($_FILES['image']['tmp_name'], $file);
-
-            $statement = $pdo->prepare("UPDATE posts SET title=:title,content=:content,image=:image WHERE id=:id");
-            $result = $statement->execute([":title" => $title, ":content" => $content, ":image" => $image, ":id" => $id]);
-            if ($result) {
-                echo "<script>alert('Successfully Updated');window.location.href='index.php';</script>";
-            }
-        }
+    $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email AND id!=:id");
+    $statement->execute([
+        ":email" => $email,
+        ":id" => $id
+    ]);
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        echo "<script>alert('Your email is already used.');</script>";
     } else {
-        $statement = $pdo->prepare("UPDATE posts SET title=:title,content=:content WHERE id=:id");
-        $result = $statement->execute([":title" => $title, ":content" => $content, ":id" => $id]);
+        $statement = $pdo->prepare("UPDATE users SET name=:name,email=:email,password=:password,role=:role WHERE id=:id");
+        $result = $statement->execute([":name" => $name, ":email" => $email, ":password" => $password, ":role" => $role, "id" => $id]);
         if ($result) {
-            echo "<script>alert('Successfully Updated');window.location.href='index.php';</script>";
+            echo "<script>alert('Successfully Updated');window.location.href='users.php';</script>";
         }
     }
 }
@@ -135,24 +130,53 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <form action="" method="post" enctype="multipart/form-data">
+                                    <form action="" method="post">
                                         <input type="hidden" name="id" value="<?= $result[0]['id'] ?>">
                                         <div class="form-group">
-                                            <label for="title">Title</label>
-                                            <input type="text" class="form-control" id="title" name="title" value="<?= $result[0]['title'] ?>" required>
+                                            <label for="name">Username</label>
+                                            <input type="text" class="form-control" value="<?= $result[0]['name'] ?>" id="name" name="name" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="content">Content</label>
-                                            <textarea class="form-control" id="content" name="content" required><?= $result[0]['content'] ?></textarea>
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" value="<?= $result[0]['email'] ?>" id="email" name="email" required>
                                         </div>
                                         <div class="form-group">
-                                            <label>Image</label>
-                                            <img src="images/<?= $result[0]['image'] ?>" alt="image" width="150px" height="150px" class="my-2">
-                                            <input class="form-control py-1" type="file" name="image" id="file">
+                                            <label for="password">Passowrd</label>
+                                            <input class="form-control" type="password" value="<?= $result[0]['password'] ?>" name="password" id="password">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Role</label>
+                                            <?php if ($result[0]["role"] == 1) : ?>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="role" value="1" id="admin" checked>
+                                                    <label class="form-check-label" for="admin">
+                                                        Admin
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="role" value="0" id="user">
+                                                    <label class="form-check-label" for="user">
+                                                        User
+                                                    </label>
+                                                </div>
+                                            <?php else : ?>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="role" value="1" id="admin">
+                                                    <label class="form-check-label" for="admin">
+                                                        Admin
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="role" value="0" id="user" checked>
+                                                    <label class="form-check-label" for="user">
+                                                        User
+                                                    </label>
+                                                </div>
+                                            <?php endif ?>
                                         </div>
                                         <div class="form-group mb-0">
                                             <input type="submit" class="btn btn-success" value="Submit">
-                                            <a href="index.php" class="btn btn-secondary mr-2">Back</a>
+                                            <a href="users.php" class="btn btn-secondary mr-2">Back</a>
                                         </div>
                                     </form>
                                 </div>

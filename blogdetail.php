@@ -1,3 +1,33 @@
+<?php
+require "config/config.php";
+session_start();
+if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
+    header("location: login.php");
+}
+$blog_id = $_GET['id'];
+
+$statement = $pdo->prepare("SELECT * FROM posts WHERE id=:id");
+$statement->execute([":id" => $_GET['id']]);
+$result = $statement->fetchAll();
+
+$cmtStatement = $pdo->prepare("SELECT comments.*, users.name FROM comments LEFT JOIN users ON comments.author_id = users.id WHERE comments.post_id=:post_id");
+$cmtStatement->execute([":post_id" => $blog_id]);
+$cmtResult = $cmtStatement->fetchAll();
+
+if ($_POST) {
+    $comment = $_POST['comment'];
+    $statement = $pdo->prepare("INSERT INTO comments(content, author_id, post_id) VALUES (:content, :author_id,:post_id)");
+    $result = $statement->execute([
+        ":content" => $comment,
+        ":author_id" => $_SESSION['user_id'],
+        ":post_id" => $blog_id
+    ]);
+    if ($result) {
+        header("location: blogdetail.php?id=$blog_id");
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,59 +53,39 @@
             <div class="row mt-3">
                 <div class="card card-widget">
                     <div class="card-header">
+                        <a href="index.php"><i class="fa fa-chevron-left" style="font-size: 20px"></i></a>
                         <div class="card-title text-center" style="float: none;">
-                            <h4 class="text-primary text-bold">Card Title</h4>
+                            <h4 class="text-primary text-bold"><?= $result[0]['title'] ?></h4>
                         </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <img class="img-fluid pad" src="./dist/img/photo2.png" alt="Photo">
-
-                        <p>I took this photo this morning. What do you guys think?</p>
-                        <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i> Share</button>
-                        <button type="button" class="btn btn-default btn-sm"><i class="far fa-thumbs-up"></i> Like</button>
-                        <span class="float-right text-muted">127 likes - 3 comments</span>
+                        <img class="img-fluid mb-2 pad" src="./admin/images/<?= $result[0]['image'] ?>" alt="Photo">
+                        <p class="mb-1"><?= $result[0]['content'] ?></p>
+                        <hr>
+                        <h4 class="text-secondary mt-1">Comments</h4>
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer card-comments">
-                        <div class="card-comment">
-                            <!-- User image -->
-                            <img class="img-circle img-sm" src="./dist/img/user3-128x128.jpg" alt="User Image">
-
-                            <div class="comment-text">
-                                <span class="username">
-                                    Maria Gonzales
-                                    <span class="text-muted float-right">8:03 PM Today</span>
-                                </span><!-- /.username -->
-                                It is a long established fact that a reader will be distracted
-                                by the readable content of a page when looking at its layout.
+                        <?php foreach ($cmtResult as $value) : ?>
+                            <div class="card-comment">
+                                <div class="comment-text m-0">
+                                    <span class="username">
+                                        <?= $value['name'] ?>
+                                        <span class="text-muted float-right"><?= $value['created_at'] ?></span>
+                                    </span>
+                                    <?= $value["content"] ?>
+                                </div>
+                                <!-- /.comment-text -->
                             </div>
-                            <!-- /.comment-text -->
-                        </div>
-                        <!-- /.card-comment -->
-                        <div class="card-comment">
-                            <!-- User image -->
-                            <img class="img-circle img-sm" src="./dist/img/user4-128x128.jpg" alt="User Image">
-
-                            <div class="comment-text">
-                                <span class="username">
-                                    Luna Stark
-                                    <span class="text-muted float-right">8:03 PM Today</span>
-                                </span><!-- /.username -->
-                                It is a long established fact that a reader will be distracted
-                                by the readable content of a page when looking at its layout.
-                            </div>
-                            <!-- /.comment-text -->
-                        </div>
+                        <?php endforeach ?>
                         <!-- /.card-comment -->
                     </div>
                     <!-- /.card-footer -->
                     <div class="card-footer">
-                        <form action="#" method="post">
-                            <img class="img-fluid img-circle img-sm" src="./dist/img/user4-128x128.jpg" alt="Alt Text">
-                            <!-- .img-push is used to add margin to elements next to floating images -->
+                        <form action="" method="post">
                             <div class="img-push">
-                                <input type="text" class="form-control form-control-sm" placeholder="Press enter to post comment">
+                                <input type="text" class="form-control form-control-sm" name="comment" placeholder="Press enter to post comment">
                             </div>
                         </form>
                     </div>
@@ -91,10 +101,12 @@
         <!-- /.content-wrapper -->
 
         <footer class="main-footer m-0">
-            <div class="float-right d-none d-sm-block">
-                <b>Version</b> 3.2.0-rc
+            <!-- To the right -->
+            <div class="float-right mr-5 d-none d-sm-inline">
+                <a href="logout.php">Logout</a>
             </div>
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+            <!-- Default to the left -->
+            <strong>Copyright &copy; 2022 <a href="https://github.com/NyiZinThant">Nyi</a>.</strong> All rights reserved.
         </footer>
 
         <!-- Control Sidebar -->

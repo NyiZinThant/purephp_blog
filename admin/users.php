@@ -4,6 +4,14 @@ require "../config/config.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role']!=1) {
     header('location: login.php');
 }
+if(isset($_POST['search'])){
+    setcookie('search',$_POST['search'],time() + (86400*30),"/");
+}else{
+    if(empty($_GET['pageno'])){
+        unset($_COOKIE['search']);
+        setcookie('search',null,-1,"/");
+    }
+}
 ?>
 <!DOCTYPE html>
 <!--
@@ -131,7 +139,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <?php
-                                    if (empty($_POST['search'])) {
+                                    if (empty($_POST['search']) and empty($_COOKIE['search'])) {
                                         if (!empty($_GET['pageno'])) {
                                             $pageno = $_GET['pageno'];
                                         } else {
@@ -148,7 +156,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         $statement->execute();
                                         $result = $statement->fetchAll();
                                     } else {
-                                        $search = $_POST['search'];
+                                        $search = isset($_POST['search'])? $_POST['search'] : $_COOKIE['search'];
                                         if (!empty($_GET['pageno'])) {
                                             $pageno = $_GET['pageno'];
                                         } else {

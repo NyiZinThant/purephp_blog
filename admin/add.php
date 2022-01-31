@@ -1,7 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
-if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in'])) {
+if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
   header('location: login.php');
 }
 if ($_POST) {
@@ -33,7 +33,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Dashboard</title>
+  <title>Admin Dashboard | Add Blog</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">

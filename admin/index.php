@@ -1,7 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
-if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in'])) {
+if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
   header('location: login.php');
 }
 ?>

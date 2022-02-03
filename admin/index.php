@@ -196,7 +196,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             </td>
                             <td>
                               <a href="edit.php?id=<?= $value['id'] ?>" class="btn btn-warning" type="button">Edit</a>
-                              <a href="delete.php?id=<?= $value['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete this Blog');" type="button">Delete</a>
+                              <a href="delete.php?id=<?= $value['id'] ?>&csrf=<?= $_SESSION['csrf'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete this Blog');" type="button">Delete</a>
                             </td>
                           </tr>
                       <?php $i++;
@@ -243,4 +243,4 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    <?php include("footer.html") ?>
+    <?php include("footer.php") ?>

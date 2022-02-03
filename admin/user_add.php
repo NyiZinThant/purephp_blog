@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
     header('location: login.php');
 }
@@ -9,7 +10,7 @@ if ($_POST) {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
-    if (empty($name) or empty($email) or empty($password) or strlen($password) < 4) {
+    if (empty($name) or empty($email) or empty($password) or strlen($_POST['password']) < 4) {
         if (empty($name)) {
             $nameError = "Username is required";
         }
@@ -18,11 +19,11 @@ if ($_POST) {
         }
         if (empty($password)) {
             $passwordError = "Password is required";
-        } elseif (strLen($password) < 4) {
+        } elseif (strLen($_POST['password']) < 4) {
             $passwordError = "Password should be 4 characters at least";
         }
     } else {
-        if(empty($role)){
+        if (empty($role)) {
             $role = 0;
         }
         $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
@@ -40,7 +41,6 @@ if ($_POST) {
             }
         }
     }
-
 }
 ?>
 <!DOCTYPE html>
@@ -143,16 +143,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <div class="card">
                                 <div class="card-body">
                                     <form action="user_add.php" method="post">
+                                        <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
                                         <div class="form-group">
-                                            <label for="name">Username</label><p class="text-danger d-inline-block ml-2"><?= empty($nameError) ? "" : "*".$nameError?></p>
+                                            <label for="name">Username</label>
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($nameError) ? "" : "*" . $nameError ?></p>
                                             <input type="text" class="form-control" id="name" name="name">
                                         </div>
                                         <div class="form-group">
-                                            <label for="email">Email</label><p class="text-danger d-inline-block ml-2"><?= empty($emailError) ? "" : "*".$emailError?></p>
+                                            <label for="email">Email</label>
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($emailError) ? "" : "*" . $emailError ?></p>
                                             <input type="email" class="form-control" id="email" name="email">
                                         </div>
                                         <div class="form-group">
-                                            <label for="password">Passowrd</label><p class="text-danger d-inline-block ml-2"><?= empty($passwordError) ? "" : "*".$passwordError?></p>
+                                            <label for="password">Passowrd</label>
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($passwordError) ? "" : "*" . $passwordError ?></p>
                                             <input class="form-control" type="password" name="password" id="password">
                                         </div>
                                         <div class="form-group">
@@ -185,4 +189,4 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-        <?php include("footer.html") ?>
+        <?php include("footer.php") ?>

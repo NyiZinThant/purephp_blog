@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
   header('location: login.php');
 }
@@ -135,6 +136,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <div class="card">
                 <div class="card-body">
                   <form action="add.php" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
                     <div class="form-group">
                       <label for="title">Title</label><p class="text-danger d-inline-block ml-2"><?= empty($titleError) ? "" : "*".$titleError?></p>
                       <input type="text" class="form-control" id="title" name="title">
@@ -162,4 +164,4 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    <?php include("footer.html") ?>
+    <?php include("footer.php") ?>

@@ -125,7 +125,7 @@ if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
     <footer class="main-footer m-0">
         <!-- To the right -->
         <div class="float-right mr-5 d-none d-sm-inline">
-            <a href="logout.php">Logout</a>
+            <a href="logout.php?csrf=<?= $_SESSION['csrf'] ?>">Logout</a>
         </div>
         <!-- Default to the left -->
         <strong>Copyright &copy; 2022 <a href="https://github.com/NyiZinThant">Nyi</a>.</strong> All rights reserved.

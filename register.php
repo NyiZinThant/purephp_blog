@@ -1,11 +1,12 @@
 <?php
 session_start();
 require "./config/config.php";
+require "./config/common.php";
 if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    if (empty($name) or empty($email) or empty($password) or empty($password) or strlen($password) < 4) {
+    if (empty($name) or empty($email) or empty($password) or empty($password) or strlen($_POST['password']) < 4) {
         if (empty($name)) {
             $nameError = "Username is required";
         }
@@ -14,7 +15,7 @@ if ($_POST) {
         }
         if (empty($password)) {
             $passwordError = "Password is required";
-        } elseif (strLen($password) < 4) {
+        } elseif (strLen($_POST['password']) < 4) {
             $passwordError = "Password should be 4 characters at least";
         }
     } else {
@@ -69,6 +70,7 @@ if ($_POST) {
                 <p class="login-box-msg">Register</p>
 
                 <form action="register.php" method="post">
+                    <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
                     <p class="text-danger"><?= empty($nameError) ? "" : "*" . $nameError ?></p>
                     <div class="input-group mb-3">
                         <input type="text" name="name" class="form-control" placeholder="Username">

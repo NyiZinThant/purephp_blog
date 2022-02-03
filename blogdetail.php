@@ -1,4 +1,5 @@
 <?php
+require "config/common.php";
 require "config/config.php";
 session_start();
 if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
@@ -88,6 +89,7 @@ if ($_POST) {
                     <!-- /.card-footer -->
                     <div class="card-footer">
                         <form action="" method="post">
+                            <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
                             <p class="text-danger"><?= empty($commentError) ? "" : "*" . $commentError ?></p>
                             <div class="img-push">
                                 <input type="text" class="form-control form-control-sm" name="comment" placeholder="Press enter to post comment">
@@ -108,7 +110,7 @@ if ($_POST) {
         <footer class="main-footer m-0">
             <!-- To the right -->
             <div class="float-right mr-5 d-none d-sm-inline">
-                <a href="logout.php">Logout</a>
+                <a href="logout.php?csrf=<?= $_SESSION['csrf'] ?>">Logout</a>
             </div>
             <!-- Default to the left -->
             <strong>Copyright &copy; 2022 <a href="https://github.com/NyiZinThant">Nyi</a>.</strong> All rights reserved.

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if ($_POST) {
   $email = $_POST['email'];
   $password = $_POST['password'];
@@ -18,7 +19,7 @@ if ($_POST) {
         $_SESSION['role'] = $user['role'];
 
         header('location: index.php');
-      }else{
+      } else {
         echo "<script>You are not Admin.</script>";
       }
     }
@@ -56,6 +57,7 @@ if ($_POST) {
         <p class="login-box-msg">Sign in to start your session</p>
 
         <form action="login.php" method="post">
+          <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
           <div class="input-group mb-3">
             <input type="email" name="email" class="form-control" placeholder="Email">
             <div class="input-group-append">

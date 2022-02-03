@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
     header('location: login.php');
 }
@@ -17,14 +18,14 @@ if ($_POST) {
     } else {
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     }
-    if (empty($name) or empty($email) or strLen($password) < 4){
+    if (empty($name) or empty($email) or strLen($_POST['password']) < 4) {
         if (empty($name)) {
             $nameError = "Username is required";
         }
         if (empty($email)) {
             $emailError = "Email is required";
         }
-        if (strLen($password) < 4) {
+        if (strLen($_POST['password']) < 4) {
             $passwordError = "Password should be 4 characters at least";
         }
     } else {
@@ -149,6 +150,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <div class="card">
                                 <div class="card-body">
                                     <form action="" method="post">
+                                        <input type="hidden" name="csrf" value="<?= $_SESSION['csrf'] ?>">
                                         <input type="hidden" name="id" value="<?= $result[0]['id'] ?>">
                                         <div class="form-group">
                                             <label for="name">Username</label>
@@ -210,4 +212,4 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-        <?php include("footer.html") ?>
+        <?php include("footer.php") ?>

@@ -4,7 +4,7 @@ require "./config/config.php";
 if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     if (empty($name) or empty($email) or empty($password) or empty($password) or strlen($password) < 4) {
         if (empty($name)) {
             $nameError = "Username is required";

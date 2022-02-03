@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSIO
 if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
     if (empty($name) or empty($email) or empty($password) or strlen($password) < 4) {
         if (empty($name)) {

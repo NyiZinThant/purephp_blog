@@ -15,7 +15,7 @@ if ($_POST) {
     if (empty($_POST['password'])) {
         $password = $result[0]['password'];
     } else {
-        $password = $_POST['password'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     }
     if (empty($name) or empty($email) or strLen($password) < 4){
         if (empty($name)) {

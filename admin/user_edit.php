@@ -1,32 +1,50 @@
 <?php
 session_start();
 require "../config/config.php";
-if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role']!=1) {
+if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
     header('location: login.php');
 }
 $statement = $pdo->prepare("SELECT * FROM users WHERE id=:id");
 $statement->execute([":id" => $_GET['id']]);
-
 $result = $statement->fetchAll();
 if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
     $role = $_POST['role'];
     $id = $_POST['id'];
-    $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email AND id!=:id");
-    $statement->execute([
-        ":email" => $email,
-        ":id" => $id
-    ]);
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
-    if ($user) {
-        echo "<script>alert('Your email is already used.');</script>";
+    if (empty($_POST['password'])) {
+        $password = $result[0]['password'];
     } else {
-        $statement = $pdo->prepare("UPDATE users SET name=:name,email=:email,password=:password,role=:role WHERE id=:id");
-        $result = $statement->execute([":name" => $name, ":email" => $email, ":password" => $password, ":role" => $role, "id" => $id]);
-        if ($result) {
-            echo "<script>alert('Successfully Updated');window.location.href='users.php';</script>";
+        $password = $_POST['password'];
+    }
+    if (empty($name) or empty($email) or strLen($password) < 4){
+        if (empty($name)) {
+            $nameError = "Username is required";
+        }
+        if (empty($email)) {
+            $emailError = "Email is required";
+        }
+        if (strLen($password) < 4) {
+            $passwordError = "Password should be 4 characters at least";
+        }
+    } else {
+        if (empty($role)) {
+            $role = 0;
+        }
+        $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email AND id!=:id");
+        $statement->execute([
+            ":email" => $email,
+            ":id" => $id
+        ]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            echo "<script>alert('Your email is already used.');</script>";
+        } else {
+            $statement = $pdo->prepare("UPDATE users SET name=:name,email=:email,password=:password,role=:role WHERE id=:id");
+            $result = $statement->execute([":name" => $name, ":email" => $email, ":password" => $password, ":role" => $role, "id" => $id]);
+            if ($result) {
+                echo "<script>alert('Successfully Updated');window.location.href='users.php';</script>";
+            }
         }
     }
 }
@@ -134,15 +152,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <input type="hidden" name="id" value="<?= $result[0]['id'] ?>">
                                         <div class="form-group">
                                             <label for="name">Username</label>
-                                            <input type="text" class="form-control" value="<?= $result[0]['name'] ?>" id="name" name="name" required>
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($nameError) ? "" : "*" . $nameError ?></p>
+                                            <input type="text" class="form-control" value="<?= $result[0]['name'] ?>" id="name" name="name">
                                         </div>
                                         <div class="form-group">
                                             <label for="email">Email</label>
-                                            <input type="email" class="form-control" value="<?= $result[0]['email'] ?>" id="email" name="email" required>
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($emailError) ? "" : "*" . $emailError ?></p>
+                                            <input type="email" class="form-control" value="<?= $result[0]['email'] ?>" id="email" name="email">
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Passowrd</label>
-                                            <input class="form-control" type="password" value="<?= $result[0]['password'] ?>" name="password" id="password">
+                                            <p class="text-danger d-inline-block ml-2"><?= empty($passwordError) ? "" : "*" . $passwordError ?></p>
+                                            <input class="form-control" type="password" placeholder="(optional)" name="password" id="password">
                                         </div>
                                         <div class="form-group">
                                             <label>Role</label>

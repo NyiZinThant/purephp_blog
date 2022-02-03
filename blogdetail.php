@@ -16,14 +16,18 @@ $cmtResult = $cmtStatement->fetchAll();
 
 if ($_POST) {
     $comment = $_POST['comment'];
-    $statement = $pdo->prepare("INSERT INTO comments(content, author_id, post_id) VALUES (:content, :author_id,:post_id)");
-    $result = $statement->execute([
-        ":content" => $comment,
-        ":author_id" => $_SESSION['user_id'],
-        ":post_id" => $blog_id
-    ]);
-    if ($result) {
-        header("location: blogdetail.php?id=$blog_id");
+    if (empty($comment)) {
+        $commentError = "Your comment is empty";
+    } else {
+        $statement = $pdo->prepare("INSERT INTO comments(content, author_id, post_id) VALUES (:content, :author_id,:post_id)");
+        $result = $statement->execute([
+            ":content" => $comment,
+            ":author_id" => $_SESSION['user_id'],
+            ":post_id" => $blog_id
+        ]);
+        if ($result) {
+            header("location: blogdetail.php?id=$blog_id");
+        }
     }
 }
 ?>
@@ -84,6 +88,7 @@ if ($_POST) {
                     <!-- /.card-footer -->
                     <div class="card-footer">
                         <form action="" method="post">
+                            <p class="text-danger"><?= empty($commentError) ? "" : "*" . $commentError ?></p>
                             <div class="img-push">
                                 <input type="text" class="form-control form-control-sm" name="comment" placeholder="Press enter to post comment">
                             </div>

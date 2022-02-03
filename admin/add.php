@@ -5,20 +5,32 @@ if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSIO
   header('location: login.php');
 }
 if ($_POST) {
-  $file = "images/" . ($_FILES['image']['name']);
-  $imageType = pathinfo($file, PATHINFO_EXTENSION);
-  if ($imageType != "png" and $imageType != "jpg" and $imageType != "jpeg") {
-    echo "<script>alert('Input must be png,jpg,jpeg')</script>";
+  if (empty($_POST['title']) or empty($_POST['content']) or empty($_FILES['image']['name'])) {
+    if(empty($_POST['title'])){
+      $titleError = "Title is required";
+    }
+    if(empty($_POST['content'])){
+      $contentError = "Content is required";
+    }
+    if(empty($_FILES['image']['name'])){
+      $imageError = "Image is required";
+    }
   } else {
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    $image = $_FILES["image"]['name'];
-    move_uploaded_file($_FILES['image']['tmp_name'], $file);
+    $file = "images/" . ($_FILES['image']['name']);
+    $imageType = pathinfo($file, PATHINFO_EXTENSION);
+    if ($imageType != "png" and $imageType != "jpg" and $imageType != "jpeg") {
+      echo "<script>alert('Input must be png,jpg,jpeg')</script>";
+    } else {
+      $title = $_POST['title'];
+      $content = $_POST['content'];
+      $image = $_FILES["image"]['name'];
+      move_uploaded_file($_FILES['image']['tmp_name'], $file);
 
-    $statement = $pdo->prepare("INSERT INTO posts(title,content,image,author_id) VALUES (:title,:content,:image,:author_id)");
-    $result = $statement->execute([":title" => $title, ":content" => $content, ":image" => $image, ":author_id" => $_SESSION["user_id"]]);
-    if ($result) {
-      echo "<script>alert('Successfully Added');window.location.href='index.php';</script>";
+      $statement = $pdo->prepare("INSERT INTO posts(title,content,image,author_id) VALUES (:title,:content,:image,:author_id)");
+      $result = $statement->execute([":title" => $title, ":content" => $content, ":image" => $image, ":author_id" => $_SESSION["user_id"]]);
+      if ($result) {
+        echo "<script>alert('Successfully Added');window.location.href='index.php';</script>";
+      }
     }
   }
 }
@@ -124,15 +136,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <div class="card-body">
                   <form action="add.php" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                      <label for="title">Title</label>
-                      <input type="text" class="form-control" id="title" name="title" required>
+                      <label for="title">Title</label><p class="text-danger d-inline-block ml-2"><?= empty($titleError) ? "" : "*".$titleError?></p>
+                      <input type="text" class="form-control" id="title" name="title">
                     </div>
                     <div class="form-group">
-                      <label for="content">Content</label>
-                      <textarea class="form-control" id="content" name="content" required></textarea>
+                      <label for="content">Content</label><p class="text-danger d-inline-block ml-2"><?= empty($contentError) ? "" : "*".$contentError?></p>
+                      <textarea class="form-control" id="content" name="content"></textarea>
                     </div>
                     <div class="form-group">
-                      <label for="file">Image</label>
+                      <label for="file">Image</label><p class="text-danger d-inline-block ml-2"><?= empty($imageError) ? "" : "*".$imageError?></p>
                       <input class="form-control py-1" type="file" name="image" id="file">
                     </div>
                     <div class="form-group mb-0">

@@ -1,7 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
-if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role']!=1) {
+if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
     header('location: login.php');
 }
 if ($_POST) {
@@ -9,20 +9,38 @@ if ($_POST) {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $role = $_POST['role'];
-    $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
-    $statement->execute([
-        ":email" => $email,
-    ]);
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
-    if ($user) {
-        echo "<script>alert('Your email is already used.');</script>";
+    if (empty($name) or empty($email) or empty($password) or strlen($password) < 4) {
+        if (empty($name)) {
+            $nameError = "Username is required";
+        }
+        if (empty($email)) {
+            $emailError = "Email is required";
+        }
+        if (empty($password)) {
+            $passwordError = "Password is required";
+        } elseif (strLen($password) < 4) {
+            $passwordError = "Password should be 4 characters at least";
+        }
     } else {
-        $statement = $pdo->prepare("INSERT INTO users(name,password,email,role) VALUES (:name,:password,:email,:role)");
-        $result = $statement->execute([":name" => $name, ":password" => $password, ":email" => $email, ":role" => $role]);
-        if ($result) {
-            echo "<script>alert('Successfully Added');window.location.href='users.php';</script>";
+        if(empty($role)){
+            $role = 0;
+        }
+        $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
+        $statement->execute([
+            ":email" => $email,
+        ]);
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            echo "<script>alert('Your email is already used.');</script>";
+        } else {
+            $statement = $pdo->prepare("INSERT INTO users(name,password,email,role) VALUES (:name,:password,:email,:role)");
+            $result = $statement->execute([":name" => $name, ":password" => $password, ":email" => $email, ":role" => $role]);
+            if ($result) {
+                echo "<script>alert('Successfully Added');window.location.href='users.php';</script>";
+            }
         }
     }
+
 }
 ?>
 <!DOCTYPE html>
@@ -126,15 +144,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                 <div class="card-body">
                                     <form action="user_add.php" method="post">
                                         <div class="form-group">
-                                            <label for="name">Username</label>
-                                            <input type="text" class="form-control" id="name" name="name" required>
+                                            <label for="name">Username</label><p class="text-danger d-inline-block ml-2"><?= empty($nameError) ? "" : "*".$nameError?></p>
+                                            <input type="text" class="form-control" id="name" name="name">
                                         </div>
                                         <div class="form-group">
-                                            <label for="email">Email</label>
-                                            <input type="email" class="form-control" id="email" name="email" required>
+                                            <label for="email">Email</label><p class="text-danger d-inline-block ml-2"><?= empty($emailError) ? "" : "*".$emailError?></p>
+                                            <input type="email" class="form-control" id="email" name="email">
                                         </div>
                                         <div class="form-group">
-                                            <label for="password">Passowrd</label>
+                                            <label for="password">Passowrd</label><p class="text-danger d-inline-block ml-2"><?= empty($passwordError) ? "" : "*".$passwordError?></p>
                                             <input class="form-control" type="password" name="password" id="password">
                                         </div>
                                         <div class="form-group">

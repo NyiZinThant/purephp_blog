@@ -5,23 +5,36 @@ if ($_POST) {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-
-    $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
-    $statement->execute([
-        ":email" => $email,
-    ]);
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
-    if($user){
-        echo "<script>alert(Your email is already used.)</script>";
-    }else{
-        $statement = $pdo->prepare("INSERT INTO users(name,password,email) VALUES (:name,:password,:email)");
-        $result = $statement->execute([
-            ":name" => $name,
-            ":password" => $password,
-            ":email" => $email
+    if (empty($name) or empty($email) or empty($password) or empty($password) or strlen($password) < 4) {
+        if (empty($name)) {
+            $nameError = "Username is required";
+        }
+        if (empty($email)) {
+            $emailError = "Email is required";
+        }
+        if (empty($password)) {
+            $passwordError = "Password is required";
+        } elseif (strLen($password) < 4) {
+            $passwordError = "Password should be 4 characters at least";
+        }
+    } else {
+        $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
+        $statement->execute([
+            ":email" => $email,
         ]);
-        if($result){
-            echo "<script>alert('Successfully registered and you can now login.');window.location.href='login.php';</script>";
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            echo "<script>alert(Your email is already used.)</script>";
+        } else {
+            $statement = $pdo->prepare("INSERT INTO users(name,password,email) VALUES (:name,:password,:email)");
+            $result = $statement->execute([
+                ":name" => $name,
+                ":password" => $password,
+                ":email" => $email
+            ]);
+            if ($result) {
+                echo "<script>alert('Successfully registered and you can now login.');window.location.href='login.php';</script>";
+            }
         }
     }
 }
@@ -56,24 +69,27 @@ if ($_POST) {
                 <p class="login-box-msg">Register</p>
 
                 <form action="register.php" method="post">
+                    <p class="text-danger"><?= empty($nameError) ? "" : "*" . $nameError ?></p>
                     <div class="input-group mb-3">
-                        <input type="text" name="name" class="form-control" placeholder="Username" required>
+                        <input type="text" name="name" class="form-control" placeholder="Username">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-user"></span>
                             </div>
                         </div>
                     </div>
+                    <p class="text-danger"><?= empty($emailError) ? "" : "*" . $emailError ?></p>
                     <div class="input-group mb-3">
-                        <input type="email" name="email" class="form-control" placeholder="Email" required>
+                        <input type="email" name="email" class="form-control" placeholder="Email">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
                             </div>
                         </div>
                     </div>
+                    <p class="text-danger"><?= empty($passwordError) ? "" : "*" . $commentError ?></p>
                     <div class="input-group mb-3">
-                        <input type="password" name="password" class="form-control" placeholder="Password" required>
+                        <input type="password" name="password" class="form-control" placeholder="Password">
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -84,8 +100,8 @@ if ($_POST) {
                         <!-- /.col -->
                         <div class="col-12">
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary btn-block" s type="submit">Register</button>
-                                <a href="register.php" class="btn btn-default btn-block" type="button">Sign In</a>
+                                <button class="btn btn-primary btn-block" type="submit">Register</button>
+                                <a href="login.php" class="btn btn-default btn-block" type="button">Sign In</a>
                             </div>
                         </div>
                         <!-- /.col -->

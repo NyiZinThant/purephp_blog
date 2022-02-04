@@ -10,6 +10,7 @@ if ($_POST) {
     ":email" => $email,
   ]);
   $user = $statement->fetch(PDO::FETCH_ASSOC);
+  postCSRF();
   if ($user) {
     if (password_verify($password, $user["password"])) {
       if ($user['role'] == 1) {

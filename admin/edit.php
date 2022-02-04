@@ -13,6 +13,7 @@ if ($_POST) {
     $id = $_POST['id'];
     $title = $_POST['title'];
     $content = $_POST['content'];
+    postCSRF();
     if (empty($title) or empty($content)) {
         if (empty($title)) {
             $titleError = "Title is required";

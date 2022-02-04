@@ -6,6 +6,7 @@ if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSIO
   header('location: login.php');
 }
 if ($_POST) {
+  postCSRF();
   if (empty($_POST['title']) or empty($_POST['content']) or empty($_FILES['image']['name'])) {
     if(empty($_POST['title'])){
       $titleError = "Title is required";

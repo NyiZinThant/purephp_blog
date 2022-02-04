@@ -10,6 +10,7 @@ if ($_POST) {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
+    postCSRF();
     if (empty($name) or empty($email) or empty($password) or strlen($_POST['password']) < 4) {
         if (empty($name)) {
             $nameError = "Username is required";

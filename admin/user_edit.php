@@ -13,6 +13,7 @@ if ($_POST) {
     $email = $_POST['email'];
     $role = $_POST['role'];
     $id = $_POST['id'];
+    postCSRF();
     if (empty($_POST['password'])) {
         $password = $result[0]['password'];
     } else {

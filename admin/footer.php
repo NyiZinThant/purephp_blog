@@ -12,7 +12,7 @@
   <footer class="main-footer">
     <!-- To the right -->
     <div class="float-right d-none d-sm-inline">
-      <a href="logout.php?csrf=<?= $_SESSION['csrf'] ?>">Logout</a>
+      <a href="logout.php">Logout</a>
     </div>
     <!-- Default to the left -->
     <strong>Copyright &copy; 2022 <a href="https://github.com/NyiZinThant">Nyi</a>.</strong> All rights reserved.

@@ -17,6 +17,7 @@ $cmtResult = $cmtStatement->fetchAll();
 
 if ($_POST) {
     $comment = $_POST['comment'];
+    postCSRF();
     if (empty($comment)) {
         $commentError = "Your comment is empty";
     } else {

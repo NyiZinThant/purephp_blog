@@ -5,6 +5,7 @@ require "./config/common.php";
 if ($_POST) {
     $email = $_POST['email'];
     $password = $_POST['password'];
+    postCSRF();
     $statement = $pdo->prepare("SELECT * FROM users WHERE email=:email");
     $statement->execute([
         ":email" => $email,

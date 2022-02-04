@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role']!=1) {
     header('location: login.php');
 }
@@ -202,7 +203,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                         <?php endif ?>
                                                         <td>
                                                             <a href="user_edit.php?id=<?= $value['id'] ?>" class="btn btn-warning" type="button">Edit</a>
-                                                            <a href="user_delete.php?id=<?= $value['id'] ?>&csrf=<?= $_SESSION['csrf'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete this User');" type="button">Delete</a>
+                                                            <a href="user_delete.php?id=<?= $value['id'] ?>" class="btn btn-danger" onclick="return confirm('Are you sure to delete this User');" type="button">Delete</a>
                                                         </td>
                                                     </tr>
                                             <?php $i++;

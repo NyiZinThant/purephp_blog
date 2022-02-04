@@ -1,5 +1,6 @@
 <?php
 require "config/config.php";
+require "config/common.php";
 session_start();
 if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
     header("location: login.php");
@@ -78,7 +79,7 @@ if (empty($_SESSION['username'] && $_SESSION['user_id'])) {
                             <a href="blogdetail.php?id=<?= $value['id'] ?>">
                                 <div class="card-header">
                                     <div class="card-title text-center" style="float: none;">
-                                        <h4 class="text-primary"><?= $value['title'] ?></h4>
+                                        <h4 class="text-primary"><?= escape($value['title']) ?></h4>
                                     </div>
                                 </div>
                             </a>

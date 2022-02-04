@@ -1,6 +1,7 @@
 <?php
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 if (!isset($_SESSION['user_id']) and !isset($_SESSION['logged_in']) and $_SESSION['role'] != 1) {
   header('location: login.php');
 }
@@ -95,7 +96,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block"><?= $_SESSION['username'] ?></a>
+            <a href="#" class="d-block"><?= escape($_SESSION['username']) ?></a>
           </div>
         </div>
 
@@ -188,10 +189,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       if ($result) : foreach ($result as $value) : ?>
                           <tr>
                             <td><?= $i ?></td>
-                            <td><?= $value['title'] ?></td>
+                            <td><?= escape($value['title']) ?></td>
                             <td>
                               <div>
-                                <?= substr($value['content'], 0, 150) . " ..." ?>
+                                <?= escape(substr($value['content'], 0, 150)) . " ..." ?>
                               </div>
                             </td>
                             <td>

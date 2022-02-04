@@ -152,12 +152,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <div class="form-group">
                                             <label for="title">Title</label>
                                             <p class="text-danger d-inline-block ml-2"><?= empty($titleError) ? "" : "*" . $titleError ?></p>
-                                            <input type="text" class="form-control" id="title" name="title" value="<?= $result[0]['title'] ?>">
+                                            <input type="text" class="form-control" id="title" name="title" value="<?= escape($result[0]['title']) ?>">
                                         </div>
                                         <div class="form-group">
                                             <label for="content">Content</label>
                                             <p class="text-danger d-inline-block ml-2"><?= empty($contentError) ? "" : "*" . $contentError ?></p>
-                                            <textarea class="form-control" id="content" name="content"><?= $result[0]['content'] ?></textarea>
+                                            <textarea class="form-control" id="content" name="content"><?= escape($result[0]['content']) ?></textarea>
                                         </div>
                                         <div class="form-group">
                                             <label>Image</label>

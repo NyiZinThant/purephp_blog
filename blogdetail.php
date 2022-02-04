@@ -61,13 +61,13 @@ if ($_POST) {
                     <div class="card-header">
                         <a href="index.php"><i class="fa fa-chevron-left" style="font-size: 20px"></i></a>
                         <div class="card-title text-center" style="float: none;">
-                            <h4 class="text-primary text-bold"><?= $result[0]['title'] ?></h4>
+                            <h4 class="text-primary text-bold"><?= escape($result[0]['title']) ?></h4>
                         </div>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
                         <img class="img-fluid mb-2 pad" src="./admin/images/<?= $result[0]['image'] ?>" alt="Photo">
-                        <p class="mb-1"><?= $result[0]['content'] ?></p>
+                        <p class="mb-1"><?= escape($result[0]['content']) ?></p>
                         <hr>
                         <h4 class="text-secondary mt-1">Comments</h4>
                     </div>
@@ -77,10 +77,10 @@ if ($_POST) {
                             <div class="card-comment">
                                 <div class="comment-text m-0">
                                     <span class="username">
-                                        <?= $value['name'] ?>
+                                        <?= escape($value['name']) ?>
                                         <span class="text-muted float-right"><?= $value['created_at'] ?></span>
                                     </span>
-                                    <?= $value["content"] ?>
+                                    <?= escape($value["content"]) ?>
                                 </div>
                                 <!-- /.comment-text -->
                             </div>

@@ -111,7 +111,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                         <img src="../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block"><?= $_SESSION['username'] ?></a>
+                        <a href="#" class="d-block"><?= escape($_SESSION['username']) ?></a>
                     </div>
                 </div>
 
@@ -156,12 +156,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                         <div class="form-group">
                                             <label for="name">Username</label>
                                             <p class="text-danger d-inline-block ml-2"><?= empty($nameError) ? "" : "*" . $nameError ?></p>
-                                            <input type="text" class="form-control" value="<?= $result[0]['name'] ?>" id="name" name="name">
+                                            <input type="text" class="form-control" value="<?= escape($result[0]['name']) ?>" id="name" name="name">
                                         </div>
                                         <div class="form-group">
                                             <label for="email">Email</label>
                                             <p class="text-danger d-inline-block ml-2"><?= empty($emailError) ? "" : "*" . $emailError ?></p>
-                                            <input type="email" class="form-control" value="<?= $result[0]['email'] ?>" id="email" name="email">
+                                            <input type="email" class="form-control" value="<?= escape($result[0]['email']) ?>" id="email" name="email">
                                         </div>
                                         <div class="form-group">
                                             <label for="password">Passowrd</label>
